@@ -28,14 +28,17 @@ end
 ---@param highlight_ns_id number
 ---@param context_preview blink-ripgrep.NumberedLine[]
 ---@param debug boolean
+---@param left_padding number|nil Number of cells padding on the left of content (default 0)
 function M.highlight_match_in_doc_window(
   bufnr,
   match,
   file,
   highlight_ns_id,
   context_preview,
-  debug
+  debug,
+  left_padding
 )
+  left_padding = left_padding or 0
   ---@type number | nil
   local line_in_docs = nil
   for line, data in ipairs(context_preview) do
@@ -68,9 +71,9 @@ function M.highlight_match_in_doc_window(
         bufnr,
         highlight_ns_id,
         line_in_docs + 1,
-        start_col,
+        left_padding + start_col,
         {
-          end_col = end_col,
+          end_col = left_padding + end_col,
           hl_group = "BlinkRipgrepMatch",
         }
       )

@@ -1,6 +1,7 @@
 ---@module "blink-ripgrep.backends.git_grep.git_grep_parser"
 
 local documentation = {}
+local extensions = require("blink-ripgrep.extensions")
 
 local highlight_ns_id = 0
 pcall(function()
@@ -16,16 +17,14 @@ vim.api.nvim_set_hl(0, "BlinkRipgrepMatch", { link = "Search", default = true })
 ---@param match blink-ripgrep.Match | blink-ripgrep.Match
 function documentation.render_item_documentation(config, draw_opts, file, match)
   local bufnr = draw_opts.window:get_buf()
+
+  local padding = 1 -- one cell left/right for content; divider stays full width
+  local styled_file_path = extensions.get_styled_file_path(file.relative_to_cwd)
+
   ---@type string[]
   local text = {
-    file.relative_to_cwd,
-    string.rep(
-      "─",
-      -- TODO account for the width of the scrollbar if it's visible
-      draw_opts.window:get_width()
-        - draw_opts.window:get_border_size().horizontal
-        - 1
-    ),
+    (" "):rep(padding) .. styled_file_path .. (" "):rep(padding),
+    "", -- Placeholder for divider line (no padding)
   }
 
   local context_preview = documentation.get_match_context(
@@ -34,7 +33,7 @@ function documentation.render_item_documentation(config, draw_opts, file, match)
     file.relative_to_cwd
   )
   for _, line in ipairs(context_preview) do
-    table.insert(text, line.text)
+    table.insert(text, (" "):rep(padding) .. line.text .. (" "):rep(padding))
   end
 
   -- TODO add extmark highlighting for the divider line like in blink
@@ -76,8 +75,14 @@ function documentation.render_item_documentation(config, draw_opts, file, match)
     file,
     highlight_ns_id,
     context_preview,
-    config.debug
+    config.debug,
+    padding
   )
+
+  extensions.apply_file_path_highlights(file.relative_to_cwd, bufnr, 0, padding)
+
+  -- Apply divider with proper highlighting (it will span full width automatically)
+  extensions.apply_divider(bufnr, 1)
 end
 
 ---@param context_size number

@@ -19,7 +19,7 @@ function documentation.render_item_documentation(config, draw_opts, file, match)
   local bufnr = draw_opts.window:get_buf()
 
   local padding = 1 -- one cell left/right for content; divider stays full width
-  local styled_file_path = extensions.get_styled_file_path(file.relative_to_cwd)
+  local styled_file_path = extensions.get_styled_file_path(file.path)
 
   ---@type string[]
   local text = {
@@ -85,7 +85,7 @@ function documentation.render_item_documentation(config, draw_opts, file, match)
     padding
   )
 
-  extensions.apply_file_path_highlights(file.relative_to_cwd, bufnr, 0, padding)
+  extensions.apply_file_path_highlights(file.path, bufnr, 0, padding)
 
   -- Apply divider with proper highlighting (it will span full width automatically)
   extensions.apply_divider(bufnr, 1)

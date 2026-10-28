@@ -78,9 +78,9 @@ function GitGrepBackend:get_matches(prefix, _, resolve)
         return
       end
 
-      local lines = vim.split(result.stdout, "\n")
-      local parser = require("blink-ripgrep.backends.git_grep.git_grep_parser")
-      local output = parser.parse_output(lines, cwd)
+      local parser =
+        require("blink-ripgrep.backends.git_grep.git_grep_lazy_parser")
+      local output = parser.parse_output(result.stdout, cwd)
 
       ---@type table<string, blink.cmp.CompletionItem>
       local items = {}
